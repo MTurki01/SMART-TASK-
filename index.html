@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>متابع المهام</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">TM</div>
+        <div>
+          <p class="eyebrow" data-i18n="brandEyebrow">منصة متابعة المهام</p>
+          <h1 data-i18n="brandTitle">متابع المهام</h1>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="chip" id="langToggle" type="button">EN</button>
+        <button class="chip" id="authToggle" type="button" data-i18n="signIn">تسجيل الدخول</button>
+        <span class="status" id="connectionStatus">غير متصل</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="heroEyebrow">تنظيم شخصي ووظيفي في مكان واحد</p>
+          <h2 data-i18n="heroTitle">أضف المهمة كتابة أو بالصوت أو من صورة، ثم حولها إلى صيغة ذكية جاهزة للحفظ.</h2>
+          <p class="hero-text" data-i18n="heroText">
+            يدعم التطبيق المهام الشخصية واليومية والأسبوعية والشهرية، والمهام الوظيفية الدورية والمستعجلة والمجدولة، مع سجل منجزات منفصل.
+          </p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <span id="activeCount">0</span>
+            <small data-i18n="activeTasks">مهام نشطة</small>
+          </div>
+          <div class="metric">
+            <span id="doneCount">0</span>
+            <small data-i18n="doneTasks">مهام منجزة</small>
+          </div>
+          <div class="metric">
+            <span id="draftConfidence">96%</span>
+            <small data-i18n="aiReady">جاهزية الصياغة</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel composer">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow" data-i18n="composerEyebrow">إضافة مهمة</p>
+              <h3 data-i18n="composerTitle">أنشئ المهمة بذكاء</h3>
+            </div>
+            <div class="segmented">
+              <button type="button" class="segment active" data-kind="personal" data-i18n="personal">شخصية</button>
+              <button type="button" class="segment" data-kind="work" data-i18n="work">وظيفية</button>
+            </div>
+          </div>
+
+          <div class="source-tabs" role="tablist" aria-label="Task source">
+            <button type="button" class="source-tab active" data-source="text" data-i18n="write">كتابة</button>
+            <button type="button" class="source-tab" data-source="voice" data-i18n="voice">صوت</button>
+            <button type="button" class="source-tab" data-source="image" data-i18n="image">صورة</button>
+          </div>
+
+          <form id="taskForm" class="task-form">
+            <label class="field">
+              <span data-i18n="taskTextLabel">نص المهمة</span>
+              <textarea id="taskInput" rows="4" placeholder="مثال: اغسل السيارة بعد الظهر"></textarea>
+            </label>
+
+            <div class="source-panel" id="voicePanel" hidden>
+              <div class="record-box">
+                <button type="button" class="action-btn" id="voiceBtn">بدء التسجيل الصوتي</button>
+                <p class="hint" id="voiceHint" data-i18n="voiceHint">سجل صوتك وسيحوّل التطبيق الكلام إلى نص.</p>
+              </div>
+            </div>
+
+            <div class="source-panel" id="imagePanel" hidden>
+              <label class="upload">
+                <input type="file" id="imageInput" accept="image/*" />
+                <span data-i18n="uploadImage">ارفع صورة لاستخلاص المهمة</span>
+              </label>
+              <div class="image-preview-wrap">
+                <img id="imagePreview" alt="" hidden />
+              </div>
+              <button type="button" class="action-btn secondary" id="extractImageBtn" data-i18n="extractTask">استخلاص المهمة من الصورة</button>
+            </div>
+
+            <label class="field">
+              <span data-i18n="detailsLabel">تفصيل المهمة</span>
+              <textarea id="taskDetails" rows="3" placeholder="اكتب التفاصيل الدقيقة للمهمة"></textarea>
+            </label>
+
+            <div class="meta-grid">
+              <label class="field">
+                <span data-i18n="categoryLabel">التصنيف</span>
+                <select id="taskFrequency">
+                  <option value="daily" data-i18n="daily">يومية</option>
+                  <option value="weekly" data-i18n="weekly">أسبوعية</option>
+                  <option value="monthly" data-i18n="monthly">شهرية</option>
+                  <option value="recurring" data-i18n="recurring">دورية</option>
+                  <option value="urgent" data-i18n="urgent">مستعجلة</option>
+                  <option value="scheduled" data-i18n="scheduled">محددة بزمن</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span data-i18n="dueLabel">الموعد</span>
+                <input id="taskDue" type="datetime-local" />
+              </label>
+
+              <label class="field">
+                <span data-i18n="priorityLabel">الأولوية</span>
+                <select id="taskPriority">
+                  <option value="low" data-i18n="low">منخفضة</option>
+                  <option value="medium" data-i18n="medium" selected>متوسطة</option>
+                  <option value="high" data-i18n="high">عالية</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="actions-row">
+              <button type="button" class="action-btn secondary" id="aiPreviewBtn" data-i18n="aiPreview">صياغة ذكية</button>
+              <button type="submit" class="action-btn primary" data-i18n="addTask">إضافة المهمة</button>
+            </div>
+          </form>
+        </article>
+
+        <aside class="panel preview">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow" data-i18n="aiDraftEyebrow">الصياغة الذكية</p>
+              <h3 data-i18n="aiDraftTitle">المهمة قبل الحفظ</h3>
+            </div>
+            <span class="badge" id="draftMode">AI</span>
+          </div>
+          <div class="draft-card">
+            <div class="draft-title" id="draftTitle">---</div>
+            <p class="draft-summary" id="draftSummary">اكتب نص المهمة أو سجّل صوتك أو ارفع صورة ليتم استخراج المهمة تلقائيًا.</p>
+            <div class="draft-tags" id="draftTags"></div>
+          </div>
+
+          <div class="panel-separator"></div>
+
+          <div class="mini-list">
+            <div class="mini-item">
+              <span data-i18n="splitIdea">الفكرة</span>
+              <strong data-i18n="splitIdeaValue">شخصي / وظيفي</strong>
+            </div>
+            <div class="mini-item">
+              <span data-i18n="splitSource">المصدر</span>
+              <strong data-i18n="splitSourceValue">نص / صوت / صورة</strong>
+            </div>
+            <div class="mini-item">
+              <span data-i18n="archiveRule">الأرشفة</span>
+              <strong data-i18n="archiveRuleValue">تُنقل بعد الإنجاز</strong>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="board-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow" data-i18n="personalTasks">المهام الشخصية</p>
+              <h3 data-i18n="personalBoard">اليومية والأسبوعية والشهرية</h3>
+            </div>
+            <input class="search" id="personalSearch" type="search" placeholder="بحث في المهام الشخصية" />
+          </div>
+          <div class="task-columns" id="personalTasks"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow" data-i18n="workTasks">المهام الوظيفية</p>
+              <h3 data-i18n="workBoard">الدورية والمستعجلة والمجدولة</h3>
+            </div>
+            <input class="search" id="workSearch" type="search" placeholder="بحث في المهام الوظيفية" />
+          </div>
+          <div class="task-columns" id="workTasks"></div>
+        </article>
+      </section>
+
+      <section class="panel archive-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow" data-i18n="archiveEyebrow">سجل المهام</p>
+            <h3 data-i18n="archiveTitle">المهام المنجزة منفصلة حسب النوع</h3>
+          </div>
+        </div>
+
+        <div class="archive-grid">
+          <div class="archive-column">
+            <div class="archive-head">
+              <h4 data-i18n="donePersonal">المنجزة الشخصية</h4>
+              <span class="badge" id="donePersonalCount">0</span>
+            </div>
+            <div id="donePersonal" class="archive-list"></div>
+          </div>
+
+          <div class="archive-column">
+            <div class="archive-head">
+              <h4 data-i18n="doneWork">المنجزة الوظيفية</h4>
+              <span class="badge" id="doneWorkCount">0</span>
+            </div>
+            <div id="doneWork" class="archive-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-card">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow" data-i18n="authEyebrow">الدخول إلى الحساب</p>
+          <h3 data-i18n="authTitle">سجّل دخولك أو أنشئ حسابًا جديدًا</h3>
+        </div>
+        <button type="button" class="icon-btn" id="closeAuth">×</button>
+      </div>
+
+      <div class="auth-grid">
+        <label class="field">
+          <span data-i18n="emailLabel">البريد الإلكتروني</span>
+          <input id="authEmail" type="email" placeholder="name@example.com" />
+        </label>
+        <label class="field">
+          <span data-i18n="passwordLabel">كلمة المرور</span>
+          <input id="authPassword" type="password" placeholder="••••••••" />
+        </label>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="action-btn secondary" id="loginBtn" data-i18n="login">دخول</button>
+        <button type="button" class="action-btn primary" id="registerBtn" data-i18n="register">تسجيل جديد</button>
+      </div>
+      <p class="hint" id="authMessage">يمكنك ربط التطبيق بـ Firebase Auth لاحقًا أو العمل في وضع تجريبي محلي الآن.</p>
+    </div>
+  </div>
+
+  <script>
+    window.TASKFLOW_CONFIG = {
+      firebase: {
+        apiKey: "AIzaSyDSi5bqbnZBFNBNS0EgKW_fmgkkYjpiqhs",
+        authDomain: "task-27345.firebaseapp.com",
+        databaseURL: "https://task-27345-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "task-27345",
+        storageBucket: "task-27345.firebasestorage.app",
+        messagingSenderId: "949587310511",
+        appId: "1:949587310511:web:d79c4b49326e157417215a",
+        measurementId: "G-0J572CSHYX"
+      },
+      ai: {
+        mode: "smart-local"
+      }
+    };
+  </script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
